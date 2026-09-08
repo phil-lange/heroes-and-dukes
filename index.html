@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101418">
+    <meta name="description" content="Heroes and Dukes. Independent worlds. Lasting adventures.">
+    <title>Heroes and Dukes — Enter the extraordinary</title>
+    <link rel="preload" href="./assets/world.png" as="image">
+    <link rel="preload" href="./assets/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="stage">
+      <div class="scenery" aria-hidden="true">
+        <img src="./assets/world.png" alt="" fetchpriority="high" width="1586" height="992">
+        <div class="hero-life">
+          <img class="hero-clean-plate" src="./assets/hero-clean-plate.png" alt="" width="1586" height="992">
+          <span class="hero-contact-shadow"></span>
+          <div class="hero-sprite"><canvas class="hero-body"></canvas><canvas class="hero-cape"></canvas></div>
+          <img class="hero-sprite-source" src="./assets/hero-cape-sprites.png" alt="" width="1536" height="1024" hidden>
+        </div>
+        <div class="atmosphere">
+          <div class="cloud-layer"><img src="./assets/moving-sky-clouds.png" alt="" width="1774" height="887"></div>
+        </div>
+        <div class="drifting-fog"><img src="./assets/moving-mist-black.png" alt="" width="1536" height="1024"></div>
+      </div>
+      <header class="site-header shell">
+        <a class="brand" href="#main" aria-label="Heroes and Dukes home">
+          <svg class="brand-logo" viewBox="0 0 186 62" aria-hidden="true" focusable="false">
+            <defs>
+              <filter id="brand-alpha" color-interpolation-filters="sRGB">
+                <feColorMatrix type="luminanceToAlpha" />
+                <feComponentTransfer><feFuncA type="linear" slope="1.25" intercept="-.125" /></feComponentTransfer>
+              </filter>
+              <mask id="brand-mask" x="0" y="0" width="186" height="62" maskUnits="userSpaceOnUse" style="mask-type:alpha">
+                <image href="./assets/brand-source.png" x="-96" y="-36" width="1586" height="992" filter="url(#brand-alpha)" />
+              </mask>
+            </defs>
+            <rect width="186" height="62" fill="currentColor" mask="url(#brand-mask)" />
+          </svg>
+        </a>
+        <nav class="desktop-nav" aria-label="Main navigation">
+          <details class="games-menu">
+            <summary>Games <span class="chevron" aria-hidden="true"></span></summary>
+            <div class="dropdown"><button type="button" data-destination="games">Explore games <span class="arrow" aria-hidden="true"></span></button></div>
+          </details>
+          <button class="nav-link" type="button" data-destination="publishing">Publishing</button>
+          <button class="nav-link" type="button" data-destination="about">About</button>
+        </nav>
+        <button class="button button-outline header-contact" type="button" data-destination="contact">Get in touch <span class="arrow" aria-hidden="true"></span></button>
+        <details class="mobile-menu">
+          <summary aria-label="Navigation menu"><span class="menu-icon" aria-hidden="true"></span></summary>
+          <nav class="mobile-links" aria-label="Mobile navigation">
+            <button type="button" data-destination="games">Games <span class="arrow" aria-hidden="true"></span></button>
+            <button type="button" data-destination="publishing">Publishing <span class="arrow" aria-hidden="true"></span></button>
+            <button type="button" data-destination="about">About <span class="arrow" aria-hidden="true"></span></button>
+            <button type="button" data-destination="contact">Get in touch <span class="arrow" aria-hidden="true"></span></button>
+          </nav>
+        </details>
+      </header>
+      <main class="hero-copy" id="main" tabindex="-1">
+        <p class="eyebrow">Heroes and Dukes</p>
+        <h1><span>Enter the</span><span>extraordinary.</span></h1>
+        <p class="hero-description">Independent worlds. Lasting adventures.</p>
+        <div class="hero-actions">
+          <button class="button button-primary" type="button" data-destination="games">Explore games <span class="arrow" aria-hidden="true"></span></button>
+          <button class="button button-outline" type="button" data-destination="publishing">For developers <span class="arrow" aria-hidden="true"></span></button>
+        </div>
+      </main>
+      <footer class="world-rail shell">
+        <span>Discover our worlds</span>
+        <div class="rail-actions">
+          <button class="motion-toggle" type="button" aria-label="Background animation" aria-pressed="true" title="Pause background animation" hidden><span class="motion-icon" aria-hidden="true"></span></button>
+          <button class="rail-link" type="button" data-destination="games">View games <span class="arrow" aria-hidden="true"></span></button>
+        </div>
+      </footer>
+    </div>
+    <dialog class="preview-dialog" aria-labelledby="preview-title" aria-describedby="preview-description">
+      <form method="dialog"><button class="dialog-close" aria-label="Close" autofocus><span aria-hidden="true">×</span></button></form>
+      <p class="dialog-eyebrow">HTML preview</p>
+      <h2 id="preview-title">Link not connected</h2>
+      <p id="preview-description">This destination has not been configured yet.</p>
+      <form method="dialog"><button class="button button-primary">Back to the page <span class="arrow" aria-hidden="true"></span></button></form>
+    </dialog>
+  </body>
+</html>

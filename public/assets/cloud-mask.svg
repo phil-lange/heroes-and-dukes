@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1586" height="992" viewBox="0 0 1586 992">
+  <defs><filter id="soft" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="24"/></filter></defs>
+  <!-- A soft image mask bounded above the existing cliff and gateway edges. -->
+  <path fill="white" filter="url(#soft)" d="M-100-100H1686V60L1570 65 1500 135 1420 190 1350 260 1280 350 1160 415 1010 420 900 395 686 395 576 420 426 415 306 350 236 260 166 190 86 135 16 65H-100Z"/>
+</svg>
