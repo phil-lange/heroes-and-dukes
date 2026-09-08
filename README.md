@@ -24,10 +24,13 @@ The workflow uses GitHub's temporary deployment token; no personal access tokens
 ## Editing
 
 - `index.html`: page content, navigation, and the original white logo with its background removed.
-- `styles.css`: layout, local Inter font, responsive styles, cloud and mist motion.
-- `script.js`: navigation and continuous cape animation. The hero's body stays fixed. One control pauses all motion, and reduced-motion preferences are respected.
+- `styles.css`: layout, local Inter font, responsive styles, and atmosphere layers.
+- `script.js`: navigation, atmosphere transforms and continuous cape animation. The hero's body stays fixed. Clouds and mist start independently of character loading; only one atlas frame is processed.
+- `motion.js`: a shared animation clock, image-load fallback and playback controls. Page restore, focus and visibility changes recover the clock. Reduced-motion preferences start paused with a visible Play button; an explicit choice is remembered for the browser session.
 - `public/assets/`: the approved artwork, animation layers, masks, and Inter license.
 
 Set the destination URLs at the top of `script.js` when the Games, Publishing, About, and Contact pages are ready. These currently show an explicit preview notice.
 
 The Inter font license is included in `public/assets/Inter-LICENSE.txt`.
+
+`npm test` checks startup, pause/resume, page restore, reduced-motion overrides and image-load fallbacks. These checks also run in GitHub Actions before deployment.

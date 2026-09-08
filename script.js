@@ -1,3 +1,5 @@
+import { createMotionClock, waitForImage, bindMotionControls } from './motion.js';
+
 // Replace null with real URLs, including a mailto: URL for contact if desired.
 // Until configured, demo controls clearly identify the missing destination.
 const destinations = Object.freeze({ games: null, publishing: null, about: null, contact: null });
@@ -91,7 +93,7 @@ async function createHeroCloth(layer) {
   const plate = layer.querySelector('.hero-clean-plate');
   const body = layer.querySelector('.hero-body');
   const canvas = layer.querySelector('.hero-cape');
-  await Promise.all([source.decode(), plate.decode()]);
+  await Promise.all([waitForImage(source), waitForImage(plate)]);
   const context = canvas.getContext('2d');
   if (!context) throw new Error('The sprite canvas is unavailable.');
 
@@ -100,10 +102,11 @@ async function createHeroCloth(layer) {
   body.width = cellWidth;
   body.height = cellHeight;
   const atlas = document.createElement('canvas');
-  atlas.width = source.naturalWidth;
-  atlas.height = source.naturalHeight;
+  // Only one cel is used. Avoid allocating and keying the other seven on phones.
+  atlas.width = cellWidth;
+  atlas.height = cellHeight;
   const atlasContext = atlas.getContext('2d', { willReadFrequently: true });
-  atlasContext.drawImage(source, 0, 0);
+  atlasContext.drawImage(source, 0, 0, cellWidth, cellHeight, 0, 0, cellWidth, cellHeight);
   const pixels = atlasContext.getImageData(0, 0, atlas.width, atlas.height);
   for (let i = 0; i < pixels.data.length; i += 4) {
     const r = pixels.data[i], g = pixels.data[i + 1], b = pixels.data[i + 2];
@@ -148,81 +151,60 @@ async function createHeroCloth(layer) {
   // The same fabric pixels flow at every frame; no sprite swaps or dissolves.
   const draw = createCapeFlow(fixed, weights, context);
 
-  let frame = 0;
-  let elapsed = 0;
-  let lastTime = null;
-  let playing = false;
-  function tick(time) {
-    if (!playing) return;
-    if (lastTime !== null) elapsed += time - lastTime;
-    lastTime = time;
-    // Follow the display refresh rate without quantizing motion to sprite cels.
-    draw(elapsed);
-    canvas.dataset.capeTime = (elapsed / 1000).toFixed(3);
-    frame = requestAnimationFrame(tick);
-  }
   draw(0);
   layer.classList.add('is-ready');
-  return {
-    setPlaying(next) {
-      if (playing === next) return;
-      playing = next;
-      cancelAnimationFrame(frame);
-      lastTime = null;
-      if (playing) frame = requestAnimationFrame(tick);
-    },
+  return elapsed => {
+    draw(elapsed);
+    canvas.dataset.capeTime = (elapsed / 1000).toFixed(3);
   };
 }
 
 // One control keeps the sky, mist and hero in the same playback state.
-async function animateAtmosphere() {
+function animateAtmosphere() {
   const scenery = document.querySelector('.scenery');
   const artwork = scenery.querySelector(':scope > img');
   const atmosphere = scenery.querySelector('.atmosphere');
   const heroLayer = scenery.querySelector('.hero-life');
   const toggle = document.querySelector('.motion-toggle');
-  const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let paused = preference.matches;
-  let capeMotion;
+  const clouds = scenery.querySelector('.cloud-layer img');
+  const mist = scenery.querySelector('.drifting-fog img');
+  let drawCape;
 
   function fitArtwork() {
-    const scale = Math.max(scenery.clientWidth / artwork.naturalWidth, scenery.clientHeight / artwork.naturalHeight);
+    const width = artwork.naturalWidth || Number(artwork.getAttribute('width'));
+    const height = artwork.naturalHeight || Number(artwork.getAttribute('height'));
+    const scale = Math.max(scenery.clientWidth / width, scenery.clientHeight / height);
     for (const layer of [atmosphere, heroLayer]) {
-      layer.style.width = `${artwork.naturalWidth * scale}px`;
-      layer.style.height = `${artwork.naturalHeight * scale}px`;
+      layer.style.width = `${width * scale}px`;
+      layer.style.height = `${height * scale}px`;
     }
   }
-  function syncPlayback() {
-    scenery.classList.toggle('motion-enabled', !paused);
-    scenery.classList.toggle('motion-paused', paused);
-    scenery.classList.toggle('motion-suspended', document.hidden);
-    capeMotion?.setPlaying(!paused && !document.hidden);
-    toggle.setAttribute('aria-pressed', String(!paused));
-    toggle.title = paused ? 'Resume background animation' : 'Pause background animation';
-  }
-  try {
-    await artwork.decode();
-    // A failed sprite load leaves the original still hero and atmosphere usable.
-    capeMotion = await createHeroCloth(heroLayer).catch(error => {
-      console.warn('Hero sprites could not be prepared:', error);
-      return null;
-    });
-    fitArtwork();
-    new ResizeObserver(fitArtwork).observe(scenery);
-    toggle.addEventListener('click', () => { paused = !paused; syncPlayback(); });
-    preference.addEventListener('change', () => { paused = preference.matches; syncPlayback(); });
-    document.addEventListener('visibilitychange', syncPlayback);
-    window.addEventListener('pagehide', () => {
-      scenery.classList.add('motion-suspended');
-      capeMotion?.setPlaying(false);
-    });
-    window.addEventListener('pageshow', syncPlayback);
-    atmosphere.classList.add('is-ready');
-    toggle.hidden = false;
-    syncPlayback();
-  } catch {
-    // The base image remains visible if the source artwork cannot be decoded.
-    toggle.hidden = true;
-  }
+  fitArtwork();
+  atmosphere.classList.add('is-ready');
+  if ('ResizeObserver' in window) new ResizeObserver(fitArtwork).observe(scenery);
+  window.addEventListener('resize', fitArtwork);
+  window.addEventListener('pageshow', fitArtwork);
+
+  const clock = createMotionClock(elapsed => {
+    // Update transforms directly: masked layers and the canvas share one clock.
+    const cloudX = -5.5 * Math.cos(Math.PI * (elapsed + 22000) / 80000);
+    const mistX = -10 * Math.cos(Math.PI * (elapsed + 5000) / 20000);
+    clouds.style.transform = `translate3d(${cloudX}%,0,0)`;
+    mist.style.transform = `translate3d(${mistX}%,${-mistX * .25}%,0) scale(1.12)`;
+    try {
+      drawCape?.(elapsed);
+    } catch (error) {
+      drawCape = undefined;
+      console.warn('Cape rendering stopped; atmospheric animation remains active.', error);
+    }
+    scenery.dataset.motionTime = (elapsed / 1000).toFixed(3);
+  });
+  bindMotionControls({ clock, toggle, scenery });
+
+  // Slow or unavailable character images must never block the sky or controls.
+  createHeroCloth(heroLayer).then(draw => {
+    drawCape = draw;
+    drawCape(clock.time);
+  }).catch(error => console.warn('Cape unavailable; atmospheric animation remains active.', error));
 }
 animateAtmosphere();

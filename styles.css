@@ -11,7 +11,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid whi
 button,summary{touch-action:manipulation}
 ::selection{background:#e5e8eb;color:#11151a}
 .stage{position:relative;isolation:isolate;display:grid;grid-template-rows:auto 1fr auto;min-height:max(700px,100svh);overflow:clip}
-.scenery{position:absolute;inset:0;z-index:-2;pointer-events:none;background:#101418}
+.scenery{position:absolute;inset:0;z-index:-2;pointer-events:none;background:#101418;overflow:hidden}
 .scenery img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block}
 .hero-life{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0}
 .hero-life.is-ready{opacity:1}
@@ -25,13 +25,9 @@ button,summary{touch-action:manipulation}
 .atmosphere.is-ready{opacity:1}
 .cloud-layer{position:absolute;inset:0;mask-repeat:no-repeat;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;-webkit-mask-size:100% 100%}
 .cloud-layer{mask-image:url('/assets/cloud-mask.svg');-webkit-mask-image:url('/assets/cloud-mask.svg');opacity:.58}
-.scenery .cloud-layer img{position:absolute;left:-16%;top:-25%;width:132%;height:auto;object-fit:contain;animation:cloud-drift 80s cubic-bezier(.37,0,.63,1) -22s infinite alternate;will-change:transform;filter:brightness(.76) saturate(.6) contrast(.9) blur(.7px)}
+.scenery .cloud-layer img{position:absolute;left:-16%;top:-25%;width:132%;height:auto;object-fit:contain;will-change:transform;filter:brightness(.76) saturate(.6) contrast(.9) blur(.7px)}
 .drifting-fog{position:absolute;left:-32%;top:24%;width:164%;height:80%;mix-blend-mode:screen;opacity:.48;mask-image:linear-gradient(transparent,black 15%,black 80%,transparent);-webkit-mask-image:linear-gradient(transparent,black 15%,black 80%,transparent)}
-.drifting-fog img{animation:fog-drift 20s linear -5s infinite alternate;filter:contrast(1.1);will-change:transform}
-.scenery .atmosphere img,.scenery .drifting-fog img{animation-play-state:running}
-.scenery.motion-paused img,.scenery.motion-suspended img{animation-play-state:paused}
-@keyframes cloud-drift{from{transform:translate3d(-5.5%,0,0)}to{transform:translate3d(5.5%,0,0)}}
-@keyframes fog-drift{from{transform:translate3d(-10%,2.5%,0) scale(1.12)}to{transform:translate3d(10%,-2.5%,0) scale(1.12)}}
+.drifting-fog img{filter:contrast(1.1);will-change:transform}
 .scenery:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,16,.58) 0%,rgba(7,12,16,.23) 33%,rgba(7,12,16,.03) 64%,rgba(7,12,16,.10) 100%)}
 .shell{margin-inline:var(--gutter)}
 .site-header{position:relative;z-index:10;display:flex;align-items:center;gap:clamp(28px,7vw,116px);height:clamp(94px,11vh,110px);padding:14px 24px 10px;border-bottom:1px solid var(--line)}
@@ -70,7 +66,10 @@ h1 span{display:block}
 .rail-link{display:inline-flex;align-items:center;gap:25px;padding:10px 0;transition:color .2s}
 .rail-link:hover{color:#c7ccd1}
 .rail-actions{display:flex;align-items:center;gap:22px}
-.motion-toggle{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid #e6ebf129;border-radius:50%;color:#e6ebf1b3;transition:color .2s,border-color .2s,background .2s}
+.motion-toggle{display:flex;align-items:center;justify-content:center;gap:8px;min-width:44px;height:44px;padding:0;border:1px solid #e6ebf129;border-radius:24px;color:#e6ebf1b3;transition:color .2s,border-color .2s,background .2s}
+.motion-label{display:none;font-size:12px}
+.motion-toggle[aria-pressed=false]{padding:0 12px}
+.motion-toggle[aria-pressed=false] .motion-label{display:inline}
 .motion-toggle[hidden]{display:none}
 .motion-toggle:hover{color:white;border-color:#e6ebf180;background:#ffffff0a}
 .motion-icon{display:block;width:9px;height:11px;border-inline:2px solid currentColor}
