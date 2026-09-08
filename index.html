@@ -7,17 +7,40 @@
     <meta name="description" content="Heroes and Dukes. Independent worlds. Lasting adventures.">
     <title>Heroes and Dukes — Enter the extraordinary</title>
     <script>
-      document.documentElement.dataset.intro = 'loading';
-      // Skip remains available even before the main script arrives.
-      const openPage = () => {
-        document.documentElement.dataset.intro = 'complete';
-        document.querySelector('.stage')?.removeAttribute('inert');
-      };
-      document.addEventListener('click', event => {
-        if (event.target instanceof Element && event.target.closest('.intro-skip, .skip-link')) openPage();
-      });
-      document.addEventListener('keydown', event => { if (event.key === 'Escape') openPage(); });
-      window.setTimeout(openPage, 12000);
+      (() => {
+        const root = document.documentElement;
+        root.dataset.intro = 'loading';
+        // A visible-time fallback also works when the module cannot download.
+        let frame, previous, elapsed = 0;
+        const openPage = () => {
+          root.dataset.intro = 'complete';
+          document.querySelector('.stage')?.removeAttribute('inert');
+          stop();
+        };
+        const onClick = event => {
+          if (event.target instanceof Element && event.target.closest('.intro-skip, .skip-link')) openPage();
+        };
+        const onKey = event => { if (event.key === 'Escape') openPage(); };
+        const onVisibility = () => { previous = undefined; };
+        function stop() {
+          cancelAnimationFrame(frame);
+          document.removeEventListener('click', onClick);
+          document.removeEventListener('keydown', onKey);
+          document.removeEventListener('visibilitychange', onVisibility);
+        }
+        function tick(now) {
+          if (root.dataset.intro === 'complete') return stop();
+          if (!document.hidden && previous !== undefined) elapsed += Math.min(now - previous, 64);
+          previous = document.hidden ? undefined : now;
+          if (elapsed >= 12000) return openPage();
+          frame = requestAnimationFrame(tick);
+        }
+        document.addEventListener('click', onClick);
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('visibilitychange', onVisibility);
+        window.addEventListener('intro:ready', stop, { once: true });
+        frame = requestAnimationFrame(tick);
+      })();
     </script>
     <link rel="preload" href="./assets/world.png" as="image">
     <link rel="preload" href="./assets/brand-source.png" as="image">
@@ -30,6 +53,16 @@
     <div class="site-intro" aria-label="Welcome to Heroes and Dukes">
       <div class="intro-door intro-door-left" aria-hidden="true"></div>
       <div class="intro-door intro-door-right" aria-hidden="true"></div>
+      <div class="intro-halo" aria-hidden="true"></div>
+      <div class="intro-floor" aria-hidden="true"></div>
+      <div class="intro-gateway" aria-hidden="true">
+        <svg viewBox="0 0 400 560" preserveAspectRatio="none">
+          <defs><linearGradient id="gateway-light" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#586c7b" stop-opacity="0"/><stop offset=".5" stop-color="#b9c9d3"/><stop offset="1" stop-color="#e9e2d2" stop-opacity=".3"/></linearGradient></defs>
+          <path class="gateway-outline" pathLength="1" d="M16 550V202a184 184 0 0 1 368 0v348"/>
+          <path class="gateway-trace" pathLength="1" d="M16 550V202a184 184 0 0 1 368 0v348"/>
+        </svg>
+        <span class="gateway-horizon"></span>
+      </div>
       <div class="intro-seam" aria-hidden="true"></div>
       <div class="intro-logo-anchor">
         <div class="intro-logo">

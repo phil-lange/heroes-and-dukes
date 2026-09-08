@@ -1,138 +1,128 @@
-/* The original logo is the only mark in the opening sequence. */
+/* An architectural gateway around the original mark; the world stays true-size. */
 .site-intro { display: none; }
 html:is([data-intro="loading"], [data-intro="revealing"]) { overflow: hidden; }
 html:is([data-intro="loading"], [data-intro="revealing"]) .site-intro {
-  display: block;
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  color: #f1f3f2;
-  isolation: isolate;
+  display: block; position: fixed; inset: 0; z-index: 200;
+  color: #f1f3f2; isolation: isolate; overflow: hidden;
 }
 .intro-door {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: calc(50% + 1px);
-  background: #0a1016;
-  transition: transform 1700ms cubic-bezier(.76, 0, .16, 1);
-  will-change: transform;
+  position: absolute; inset-block: 0; width: calc(50% + 1px);
+  background: #090d11; will-change: transform;
 }
 .intro-door::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100px;
-  pointer-events: none;
+  content: ''; position: absolute; inset-block: 0; width: 100px; pointer-events: none;
 }
 .intro-door-left { left: 0; }
-.intro-door-left::after { left: 100%; background: linear-gradient(90deg, #0a1016, transparent); }
+.intro-door-left::after { left: 100%; background: linear-gradient(90deg, #090d11, transparent); }
 .intro-door-right { right: 0; }
-.intro-door-right::after { right: 100%; background: linear-gradient(-90deg, #0a1016, transparent); }
+.intro-door-right::after { right: 100%; background: linear-gradient(-90deg, #090d11, transparent); }
+.intro-halo {
+  position: absolute; width: min(1000px, 130vw); aspect-ratio: 1; left: 50%; top: 48%;
+  transform: translate(-50%, -50%); pointer-events: none;
+  background: radial-gradient(ellipse, #8aabc31a 0%, #67859d0b 35%, transparent 68%);
+  animation: intro-breathe 4200ms ease-in-out infinite alternate;
+}
+.intro-gateway {
+  position: absolute; left: 50%; top: 47%; width: min(400px, 75vw); height: min(560px, 72svh);
+  transform: translate(-50%, -50%); transform-origin: 50% 65%; pointer-events: none;
+}
+.intro-gateway svg { width: 100%; height: 100%; overflow: visible; fill: none; }
+.gateway-outline { stroke: #a4bac718; stroke-width: 1; }
+.gateway-trace {
+  stroke: url(#gateway-light); stroke-width: 1.3; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: gateway-draw 1900ms cubic-bezier(.2, .65, .2, 1) forwards;
+}
+.gateway-horizon {
+  position: absolute; height: 1px; bottom: 1.8%; left: -30%; right: -30%;
+  background: linear-gradient(90deg, transparent, #aec2cd45, transparent);
+}
+.intro-floor {
+  position: absolute; width: 140%; height: 55%; left: -20%; bottom: -24%;
+  transform: perspective(380px) rotateX(64deg); transform-origin: center top;
+  background-image: linear-gradient(#9fb2c112 1px, transparent 1px), linear-gradient(90deg, #9fb2c112 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at 50% 0, black 5%, transparent 65%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0, black 5%, transparent 65%);
+  pointer-events: none;
+}
 .intro-seam {
-  position: absolute;
-  left: 50%;
-  top: 10%;
-  width: 1px;
-  height: 80%;
-  opacity: .3;
-  background: linear-gradient(transparent, #9baeb92b 22%, #dce5ec47 50%, #9baeb92b 78%, transparent);
-  transition: opacity 600ms ease;
+  position: absolute; left: calc(50% - 1px); top: 0; width: 2px; height: 100%; opacity: 0;
+  background: linear-gradient(transparent 5%, #afc5d980 25%, #f5f1e6 50%, #afc5d980 75%, transparent 95%);
+  box-shadow: 0 0 28px 5px #bcd5e52a; pointer-events: none;
 }
 .intro-logo-anchor {
-  position: absolute;
-  width: min(320px, 70vw);
-  left: 50%;
-  top: 44%;
-  transform: translate(-50%, -50%);
+  position: absolute; width: min(320px, 67vw); left: 50%; top: 44%; transform: translate(-50%, -50%);
 }
-.intro-logo {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3;
-  transform-origin: top left;
-  transition: transform 1550ms cubic-bezier(.76, 0, .16, 1);
-  will-change: transform;
-}
-.intro-logo .brand-logo { animation: intro-mark-in 1000ms cubic-bezier(.2, .7, .25, 1) both; }
+.intro-logo { position: relative; width: 100%; aspect-ratio: 3; transform-origin: top left; will-change: transform; }
+.intro-logo .brand-logo { opacity: 0; }
+html[data-intro-brand="ready"] .intro-logo .brand-logo { animation: intro-mark-in 1150ms cubic-bezier(.16, 1, .3, 1) both; }
 .intro-message {
-  position: absolute;
-  top: calc(44% + 96px);
-  left: 50%;
-  width: min(250px, 62vw);
-  transform: translateX(-50%);
-  text-align: center;
-  transition: opacity 420ms ease, translate 700ms ease;
+  position: absolute; top: calc(44% + 86px); left: 50%; width: min(220px, 55vw);
+  transform: translateX(-50%); text-align: center;
 }
 .intro-caption {
-  margin: 0 0 25px;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: .3em;
-  padding-left: .3em;
-  text-transform: uppercase;
-  color: #a1aeb8;
-  animation: intro-caption-in 1200ms ease both;
+  margin: 0 0 28px; font-size: 9px; font-weight: 400; letter-spacing: .32em; padding-left: .32em;
+  text-transform: uppercase; color: #a8b4bd; animation: intro-caption-in 1400ms ease both;
 }
 .intro-track { height: 1px; background: #d4dfe218; overflow: hidden; }
 .intro-track span {
-  display: block;
-  height: 100%;
-  transform: scaleX(var(--load-progress, 0));
-  transform-origin: left;
-  background: linear-gradient(90deg, #71828c, #e5ebee);
-  transition: transform 600ms cubic-bezier(.2, .7, .25, 1);
+  display: block; height: 100%; transform: scaleX(var(--load-progress, 0)); transform-origin: left;
+  background: linear-gradient(90deg, #71828c, #e5ebee); transition: transform 600ms cubic-bezier(.2, .7, .25, 1);
 }
 .intro-footer {
-  position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  bottom: clamp(24px, 5vh, 50px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  color: #7f8a94;
-  font-size: 11px;
-  letter-spacing: .06em;
-  transition: opacity 350ms ease;
+  position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(24px, 5vh, 50px);
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  color: #87939d; font-size: 11px; letter-spacing: .06em;
 }
 .intro-skip { min-height: 44px; padding: 10px 0 10px 16px; font-size: 11px; letter-spacing: .04em; }
 .intro-skip span { margin-left: 12px; color: #d9e1e6; }
 .intro-skip:hover { color: #fff; }
-
-/* Reveal the landscape at its true size, so the character never grows. */
-html[data-intro] .scenery { transition: opacity 1700ms ease; }
-html[data-intro="loading"] .scenery { opacity: .3; }
+html[data-intro="loading"] .scenery { opacity: .35; }
 html[data-intro="loading"] :is(.site-header, .hero-copy > *, .hero-copy h1 span, .world-rail) { opacity: 0; }
-html[data-intro="loading"] :is(.hero-copy .eyebrow, .hero-copy h1 span, .hero-description, .hero-actions, .world-rail) { transform: translateY(20px); }
 html:is([data-intro="loading"], [data-intro="revealing"]) .site-header .brand { opacity: 0; }
-html[data-intro="revealing"] .intro-door-left { transform: translate3d(calc(-100% - 110px), 0, 0); }
-html[data-intro="revealing"] .intro-door-right { transform: translate3d(calc(100% + 110px), 0, 0); }
-html[data-intro="revealing"] .intro-seam { opacity: 0; }
-html[data-intro="revealing"] .intro-logo { transform: translate3d(var(--logo-x), var(--logo-y), 0) scale(var(--logo-scale)); }
-html[data-intro="revealing"] .intro-message { opacity: 0; translate: 0 -8px; }
-html[data-intro="revealing"] .intro-footer { opacity: 0; pointer-events: none; }
+html[data-intro="revealing"] .intro-door-left { animation: gate-left 2500ms cubic-bezier(.65, 0, .15, 1) both; }
+html[data-intro="revealing"] .intro-door-right { animation: gate-right 2500ms cubic-bezier(.65, 0, .15, 1) both; }
+html[data-intro="revealing"] .intro-seam { animation: gate-light 1450ms ease both; }
+html[data-intro="revealing"] .intro-gateway { animation: gateway-open 2200ms cubic-bezier(.65, 0, .15, 1) both; }
+html[data-intro="revealing"] .intro-halo { animation: halo-open 1700ms ease both; }
+html[data-intro="revealing"] .intro-floor { animation: intro-fade-out 700ms ease both; }
+html[data-intro="revealing"] .intro-logo { animation: logo-flight 2250ms cubic-bezier(.65, 0, .15, 1) both; }
+html[data-intro="revealing"] .intro-message { animation: intro-fade-out 350ms ease both; }
+/* Skip stays operable throughout the reveal. */
+html[data-intro="revealing"] .intro-status { opacity: 0; }
+html[data-intro="revealing"] .scenery { animation: scene-arrival 2400ms ease both; }
 html[data-intro="revealing"] :is(.site-header, .hero-copy .eyebrow, .hero-copy h1 span, .hero-description, .hero-actions, .world-rail) {
-  animation: intro-content-in 1000ms cubic-bezier(.18, .7, .2, 1) both;
+  animation: intro-content-in 900ms cubic-bezier(.16, 1, .3, 1) both;
 }
-html[data-intro="revealing"] .site-header { animation-delay: 650ms; }
-html[data-intro="revealing"] .hero-copy .eyebrow { animation-delay: 450ms; }
-html[data-intro="revealing"] .hero-copy h1 span:nth-child(1) { animation-delay: 600ms; }
-html[data-intro="revealing"] .hero-copy h1 span:nth-child(2) { animation-delay: 720ms; }
-html[data-intro="revealing"] .hero-description { animation-delay: 850ms; }
-html[data-intro="revealing"] .hero-actions { animation-delay: 980ms; animation-duration: 800ms; }
-html[data-intro="revealing"] .world-rail { animation-delay: 1050ms; animation-duration: 800ms; }
-@keyframes intro-mark-in { from { opacity: 0; filter: blur(5px); translate: 0 8px; } to { opacity: 1; filter: blur(0); translate: 0 0; } }
-@keyframes intro-caption-in { 0%, 20% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes intro-content-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+html[data-intro="revealing"] .site-header { animation-name: intro-caption-in; animation-delay: 1350ms; }
+html[data-intro="revealing"] .hero-copy .eyebrow { animation-delay: 950ms; }
+html[data-intro="revealing"] .hero-copy h1 span:nth-child(1) { animation-delay: 1100ms; }
+html[data-intro="revealing"] .hero-copy h1 span:nth-child(2) { animation-delay: 1240ms; }
+html[data-intro="revealing"] .hero-description { animation-delay: 1480ms; animation-duration: 700ms; }
+html[data-intro="revealing"] .hero-actions { animation-delay: 1600ms; animation-duration: 700ms; }
+html[data-intro="revealing"] .world-rail { animation-delay: 1750ms; animation-duration: 700ms; }
+html[data-intro-paused="true"] .site-intro *, html[data-intro-paused="true"][data-intro="revealing"] .stage * { animation-play-state: paused !important; }
+@keyframes gateway-draw { to { stroke-dashoffset: 0; } }
+@keyframes intro-breathe { from { opacity: .5; } to { opacity: 1; } }
+@keyframes intro-mark-in { from { opacity: 0; filter: blur(7px); clip-path: inset(0 100% 0 0); translate: 0 10px; } to { opacity: 1; filter: blur(0); clip-path: inset(0); translate: 0 0; } }
+@keyframes intro-caption-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes intro-fade-out { to { opacity: 0; } }
+@keyframes gate-left { 0%, 8% { transform: translateX(0); } 100% { transform: translateX(calc(-100% - 110px)); } }
+@keyframes gate-right { 0%, 8% { transform: translateX(0); } 100% { transform: translateX(calc(100% + 110px)); } }
+@keyframes gate-light { 0% { opacity: 0; transform: scaleY(.15); } 30% { opacity: .8; transform: scaleY(1); } 100% { opacity: 0; transform: scaleX(9) scaleY(1); } }
+@keyframes gateway-open { 0%, 8% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 60% { opacity: .3; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(2.8); } }
+@keyframes halo-open { 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6); } }
+@keyframes logo-flight { 0%, 8% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(var(--logo-x), var(--logo-y), 0) scale(var(--logo-scale)); } }
+@keyframes scene-arrival { 0% { opacity: .35; } 70%, 100% { opacity: 1; } }
+@keyframes intro-content-in { from { opacity: 0; transform: translateY(32px); clip-path: inset(0 0 100%); } to { opacity: 1; transform: translateY(0); clip-path: inset(0); } }
 @media (max-width: 480px) {
-  .intro-logo-anchor { width: 70vw; }
-  .intro-message { top: calc(44% + 80px); }
-  .intro-caption { font-size: 9px; letter-spacing: .24em; }
+  .intro-message { top: calc(44% + 74px); }
+  .intro-caption { font-size: 8px; letter-spacing: .25em; }
   .intro-footer { font-size: 10px; }
+  .intro-gateway { height: min(450px, 65svh); }
 }
 @media (prefers-reduced-motion: reduce) {
   .site-intro *, html[data-intro="revealing"] * { animation: none !important; transition: none !important; }
+  html[data-intro-brand="ready"] .intro-logo .brand-logo { opacity: 1; }
 }
