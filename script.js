@@ -1,4 +1,5 @@
 import { createMotionClock, waitForImage, bindMotionControls } from './motion.js';
+import { startIntro } from './intro.js';
 
 // Replace null with real URLs, including a mailto: URL for contact if desired.
 // Until configured, demo controls clearly identify the missing destination.
@@ -202,9 +203,10 @@ function animateAtmosphere() {
   bindMotionControls({ clock, toggle, scenery });
 
   // Slow or unavailable character images must never block the sky or controls.
-  createHeroCloth(heroLayer).then(draw => {
+  return createHeroCloth(heroLayer).then(draw => {
     drawCape = draw;
     drawCape(clock.time);
   }).catch(error => console.warn('Cape unavailable; atmospheric animation remains active.', error));
 }
-animateAtmosphere();
+const heroReady = animateAtmosphere();
+startIntro(heroReady);

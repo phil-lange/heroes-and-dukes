@@ -6,12 +6,45 @@
     <meta name="theme-color" content="#101418">
     <meta name="description" content="Heroes and Dukes. Independent worlds. Lasting adventures.">
     <title>Heroes and Dukes — Enter the extraordinary</title>
+    <script>
+      document.documentElement.dataset.intro = 'loading';
+      // Skip remains available even before the main script arrives.
+      const openPage = () => {
+        document.documentElement.dataset.intro = 'complete';
+        document.querySelector('.stage')?.removeAttribute('inert');
+      };
+      document.addEventListener('click', event => {
+        if (event.target instanceof Element && event.target.closest('.intro-skip, .skip-link')) openPage();
+      });
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') openPage(); });
+      window.setTimeout(openPage, 12000);
+    </script>
     <link rel="preload" href="./assets/world.png" as="image">
+    <link rel="preload" href="./assets/brand-source.png" as="image">
     <link rel="preload" href="./assets/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./intro.css">
     <script type="module" src="./script.js"></script>
   </head>
   <body>
+    <div class="site-intro" aria-label="Welcome to Heroes and Dukes">
+      <div class="intro-door intro-door-left" aria-hidden="true"></div>
+      <div class="intro-door intro-door-right" aria-hidden="true"></div>
+      <div class="intro-seam" aria-hidden="true"></div>
+      <div class="intro-logo-anchor">
+        <div class="intro-logo">
+          <svg class="brand-logo" viewBox="0 0 186 62" role="img" aria-label="Heroes and Dukes"><use href="#brand-artwork" /></svg>
+        </div>
+      </div>
+      <div class="intro-message">
+        <p class="intro-caption">A new world awaits</p>
+        <div class="intro-track" role="progressbar" aria-label="Loading artwork" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+      </div>
+      <div class="intro-footer">
+        <span class="intro-status" role="status">Preparing your world</span>
+        <button class="intro-skip" type="button">Skip intro <span aria-hidden="true">↗</span></button>
+      </div>
+    </div>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="stage">
       <div class="scenery" aria-hidden="true">
@@ -39,7 +72,7 @@
                 <image href="./assets/brand-source.png" x="-96" y="-36" width="1586" height="992" filter="url(#brand-alpha)" />
               </mask>
             </defs>
-            <rect width="186" height="62" fill="currentColor" mask="url(#brand-mask)" />
+            <g id="brand-artwork"><rect width="186" height="62" fill="currentColor" mask="url(#brand-mask)" /></g>
           </svg>
         </a>
         <nav class="desktop-nav" aria-label="Main navigation">

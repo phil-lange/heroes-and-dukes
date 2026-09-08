@@ -27,10 +27,11 @@ The workflow uses GitHub's temporary deployment token; no personal access tokens
 - `styles.css`: layout, local Inter font, responsive styles, and atmosphere layers.
 - `script.js`: navigation, atmosphere transforms and continuous cape animation. The hero's body stays fixed. Clouds and mist start independently of character loading; only one atlas frame is processed.
 - `motion.js`: a shared animation clock, image-load fallback and playback controls. Page restore, focus and visibility changes recover the clock. Reduced-motion preferences start paused with a visible Play button; an explicit choice is remembered for the browser session.
+- `intro.js` / `intro.css`: a logo-led entrance tied to artwork readiness. Dark panels reveal the landscape while the original logo moves into the header. Skip intro or Escape opens the page immediately. Reduced-motion settings omit the travel and staggered reveal. A readiness deadline and an independent watchdog prevent stalled assets or JavaScript failures from trapping visitors.
 - `public/assets/`: the approved artwork, animation layers, masks, and Inter license.
 
 Set the destination URLs at the top of `script.js` when the Games, Publishing, About, and Contact pages are ready. These currently show an explicit preview notice.
 
 The Inter font license is included in `public/assets/Inter-LICENSE.txt`.
 
-`npm test` checks startup, pause/resume, page restore, reduced-motion overrides and image-load fallbacks. These checks also run in GitHub Actions before deployment.
+`npm test` checks startup, pause/resume, page restore, reduced-motion overrides, image-load fallbacks and entrance readiness deadlines. These checks also run in GitHub Actions before deployment.
