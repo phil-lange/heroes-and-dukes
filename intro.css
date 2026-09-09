@@ -54,7 +54,7 @@ html:is([data-intro="loading"], [data-intro="revealing"]) .site-intro {
 .intro-logo-anchor {
   position: absolute; width: min(320px, 67vw); left: 50%; top: 44%; transform: translate(-50%, -50%);
 }
-.intro-logo { position: relative; width: 100%; aspect-ratio: 3; transform-origin: top left; will-change: transform; }
+.intro-logo { position: relative; width: 100%; aspect-ratio: 3; will-change: opacity; }
 .intro-logo .brand-logo { opacity: 0; }
 html[data-intro-brand="ready"] .intro-logo .brand-logo { animation: intro-mark-in 1150ms cubic-bezier(.16, 1, .3, 1) both; }
 .intro-message {
@@ -80,19 +80,19 @@ html[data-intro-brand="ready"] .intro-logo .brand-logo { animation: intro-mark-i
 .intro-skip:hover { color: #fff; }
 html[data-intro="loading"] .scenery { opacity: .35; }
 html[data-intro="loading"] :is(.site-header, .hero-copy > *, .hero-copy h1 span, .world-rail) { opacity: 0; }
-html:is([data-intro="loading"], [data-intro="revealing"]) .site-header .brand { opacity: 0; }
+html[data-intro="loading"] .site-header .brand { opacity: 0; }
 html[data-intro="revealing"] .intro-door-left { animation: gate-left 2500ms cubic-bezier(.65, 0, .15, 1) both; }
 html[data-intro="revealing"] .intro-door-right { animation: gate-right 2500ms cubic-bezier(.65, 0, .15, 1) both; }
 html[data-intro="revealing"] .intro-seam { animation: gate-light 1450ms ease both; }
 html[data-intro="revealing"] .intro-gateway { animation: gateway-open 2200ms cubic-bezier(.65, 0, .15, 1) both; }
 html[data-intro="revealing"] .intro-halo { animation: halo-open 1700ms ease both; }
 html[data-intro="revealing"] .intro-floor { animation: intro-fade-out 700ms ease both; }
-html[data-intro="revealing"] .intro-logo { animation: logo-flight 2250ms cubic-bezier(.65, 0, .15, 1) both; }
+html[data-intro="revealing"] .intro-logo { animation: intro-fade-out 650ms ease both; }
 html[data-intro="revealing"] .intro-message { animation: intro-fade-out 350ms ease both; }
 /* Skip stays operable throughout the reveal. */
 html[data-intro="revealing"] .intro-status { opacity: 0; }
 html[data-intro="revealing"] .scenery { animation: scene-arrival 2400ms ease both; }
-html[data-intro="revealing"] :is(.site-header, .hero-copy .eyebrow, .hero-copy h1 span, .hero-description, .hero-actions, .world-rail) {
+html[data-intro="revealing"] :where(.site-header, .hero-copy .eyebrow, .hero-copy h1 span, .hero-description, .hero-actions, .world-rail) {
   animation: intro-content-in 900ms cubic-bezier(.16, 1, .3, 1) both;
 }
 html[data-intro="revealing"] .site-header { animation-name: intro-caption-in; animation-delay: 1350ms; }
@@ -113,7 +113,6 @@ html[data-intro-paused="true"] .site-intro *, html[data-intro-paused="true"][dat
 @keyframes gate-light { 0% { opacity: 0; transform: scaleY(.15); } 30% { opacity: .8; transform: scaleY(1); } 100% { opacity: 0; transform: scaleX(9) scaleY(1); } }
 @keyframes gateway-open { 0%, 8% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 60% { opacity: .3; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(2.8); } }
 @keyframes halo-open { 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6); } }
-@keyframes logo-flight { 0%, 8% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(var(--logo-x), var(--logo-y), 0) scale(var(--logo-scale)); } }
 @keyframes scene-arrival { 0% { opacity: .35; } 70%, 100% { opacity: 1; } }
 @keyframes intro-content-in { from { opacity: 0; transform: translateY(32px); clip-path: inset(0 0 100%); } to { opacity: 1; transform: translateY(0); clip-path: inset(0); } }
 @media (max-width: 480px) {

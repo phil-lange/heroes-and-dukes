@@ -106,9 +106,6 @@ export function startIntro(heroReady) {
   const stage = document.querySelector('.stage');
   if (!intro || root.dataset.intro !== 'loading') return;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const logo = intro.querySelector('.intro-logo');
-  const anchor = intro.querySelector('.intro-logo-anchor');
-  const target = document.querySelector('.brand .brand-logo');
   const track = intro.querySelector('.intro-track');
   const status = intro.querySelector('.intro-status');
   let focusOnFinish = false;
@@ -120,7 +117,6 @@ export function startIntro(heroReady) {
     revealDuration: reduced ? 0 : 2600,
     onMark() { root.dataset.introBrand = 'ready'; },
     onReveal() {
-      alignLogo();
       status.textContent = 'Enter the extraordinary';
       root.dataset.intro = 'revealing';
     },
@@ -134,19 +130,9 @@ export function startIntro(heroReady) {
     },
   });
 
-  function alignLogo() {
-    // Measure the unmoving anchor, so a mobile toolbar resize updates the
-    // flight's endpoint without restarting it or dropping the entrance.
-    const from = anchor.getBoundingClientRect();
-    const to = target.getBoundingClientRect();
-    logo.style.setProperty('--logo-x', `${to.left - from.left}px`);
-    logo.style.setProperty('--logo-y', `${to.top - from.top}px`);
-    logo.style.setProperty('--logo-scale', String(to.width / from.width));
-  }
   function syncVisibility() {
     root.dataset.introPaused = String(document.hidden);
     sequence.setVisible(!document.hidden);
-    alignLogo();
   }
   function skip() { focusOnFinish = true; sequence.finish(); }
   stage.inert = true;
@@ -155,7 +141,6 @@ export function startIntro(heroReady) {
   document.addEventListener('keydown', event => { if (event.key === 'Escape') skip(); }, { signal });
   document.addEventListener('visibilitychange', syncVisibility, { signal });
   window.addEventListener('pageshow', syncVisibility, { signal });
-  window.addEventListener('resize', alignLogo, { signal });
   syncVisibility();
 
   const brand = new Image();
