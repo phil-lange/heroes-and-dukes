@@ -56,7 +56,7 @@ function createCapeFlow(texture, weights, context) {
       });
     }
   }
-  return milliseconds => {
+  return (milliseconds, strength = 1) => {
     const time = milliseconds / 1000;
     const windSin = Math.sin(time * 1.15), windCos = Math.cos(time * 1.15);
     const rippleSin = Math.sin(time * 2.05 + .6), rippleCos = Math.cos(time * 2.05 + .6);
@@ -64,9 +64,9 @@ function createCapeFlow(texture, weights, context) {
       const wave = windSin * point.cos - windCos * point.sin;
       const ripple = rippleSin * point.cosRipple - rippleCos * point.sinRipple;
       const sx = Math.max(0, Math.min(width - 1.001,
-        point.x - point.amplitude * (2.8 * wave + .8 * ripple)));
+        point.x - point.amplitude * strength * (2.8 * wave + .8 * ripple)));
       const sy = Math.max(0, Math.min(height - 1.001,
-        point.y - point.amplitude * (12 * wave + 2.5 * ripple)));
+        point.y - point.amplitude * strength * (12 * wave + 2.5 * ripple)));
       const x0 = Math.floor(sx), y0 = Math.floor(sy);
       const dx = sx - x0, dy = sy - y0;
       const a = (y0 * width + x0) * 4;
@@ -123,7 +123,8 @@ async function createHeroCloth(layer) {
 
   // This rectangle stays left of the torso and below the collar and arm.
   // Its inner mask pins the cloth against the body while the outer hem flows.
-  const cape = { x: 0, y: 232, width: 158, height: 156 };
+  // Leave transparent room below the hem for stronger mobile gusts.
+  const cape = { x: 0, y: 232, width: 158, height: 192 };
   canvas.width = cape.width;
   canvas.height = cape.height;
   Object.assign(canvas.style, {
@@ -146,7 +147,7 @@ async function createHeroCloth(layer) {
     const innerEdge = sourceY < 270 ? 120 + (sourceY - 234) * .75 : 147 - (sourceY - 270) * .29;
     for (let x = 0; x < cape.width; x++) {
       weights[y * cape.width + x] = smooth(234, 252, sourceY)
-        * (1 - smooth(367, 386, sourceY)) * smooth(0, 16, innerEdge - x);
+        * (1 - smooth(402, 422, sourceY)) * smooth(0, 16, innerEdge - x);
     }
   }
   // The same fabric pixels flow at every frame; no sprite swaps or dissolves.
@@ -154,8 +155,8 @@ async function createHeroCloth(layer) {
 
   draw(0);
   layer.classList.add('is-ready');
-  return elapsed => {
-    draw(elapsed);
+  return (elapsed, strength = 1) => {
+    draw(elapsed, strength);
     canvas.dataset.capeTime = (elapsed / 1000).toFixed(3);
   };
 }
@@ -170,6 +171,12 @@ function animateAtmosphere() {
   const clouds = scenery.querySelector('.cloud-layer img');
   const mist = scenery.querySelector('.drifting-fog img');
   let drawCape;
+  const mobileView = window.matchMedia('(max-width: 800px)');
+  let mobileBlend = mobileView.matches ? 1 : 0;
+  let previousTime = 0;
+  let capeTime = 0;
+  let cloudTime = 22000;
+  let mistTime = 5000;
 
   function fitArtwork() {
     const width = artwork.naturalWidth || Number(artwork.getAttribute('width'));
@@ -188,12 +195,19 @@ function animateAtmosphere() {
 
   const clock = createMotionClock(elapsed => {
     // Update transforms directly: masked layers and the canvas share one clock.
-    const cloudX = -5.5 * Math.cos(Math.PI * (elapsed + 22000) / 80000);
-    const mistX = -10 * Math.cos(Math.PI * (elapsed + 5000) / 20000);
+    const delta = Math.max(0, elapsed - previousTime);
+    previousTime = elapsed;
+    // Blend the wind on rotation without jumping to a new animation phase.
+    mobileBlend += ((mobileView.matches ? 1 : 0) - mobileBlend) * Math.min(1, delta / 700);
+    capeTime += delta * (1 + mobileBlend * .45);
+    cloudTime += delta * (1 + mobileBlend * .7);
+    mistTime += delta * (1 + mobileBlend * .45);
+    const cloudX = -5.5 * Math.cos(Math.PI * cloudTime / 80000);
+    const mistX = -10 * Math.cos(Math.PI * mistTime / 20000);
     clouds.style.transform = `translate3d(${cloudX}%,0,0)`;
     mist.style.transform = `translate3d(${mistX}%,${-mistX * .25}%,0) scale(1.12)`;
     try {
-      drawCape?.(elapsed);
+      drawCape?.(capeTime, 1 + mobileBlend * 2.2);
     } catch (error) {
       drawCape = undefined;
       console.warn('Cape rendering stopped; atmospheric animation remains active.', error);
@@ -205,7 +219,7 @@ function animateAtmosphere() {
   // Slow or unavailable character images must never block the sky or controls.
   return createHeroCloth(heroLayer).then(draw => {
     drawCape = draw;
-    drawCape(clock.time);
+    drawCape(capeTime, 1 + mobileBlend * 2.2);
   }).catch(error => console.warn('Cape unavailable; atmospheric animation remains active.', error));
 }
 const heroReady = animateAtmosphere();
